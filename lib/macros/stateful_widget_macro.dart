@@ -1,104 +1,93 @@
 import 'dart:async';
 
 import 'package:macros/macros.dart';
+import 'package:macros_practice/util/resolve_type.dart';
+import 'package:macros_practice/util/strings.dart';
 
-macro class Stateful implements ClassDeclarationsMacro, LibraryTypesMacro {
-  const Stateful(this.statefulWidgetName);
-
-  final String statefulWidgetName;
-
-  @override
-  FutureOr<void> buildDeclarationsForClass(
-    ClassDeclaration clazz,
-    MemberDeclarationBuilder builder,
-  ) {
-    
-    builder.declareInType(
-      DeclarationCode.fromString(
-          '  late final void Function(void Function()) setStateFn;'),
-    );
-    builder.declareInType(
-      DeclarationCode.fromString(
-        '''
-  void setState(void Function() fn) {
-    setStateFn(fn);
-  }''',
-      ),
-    );
-  }
+macro class Stateful implements VariableTypesMacro {
+  const Stateful();
 
   @override
-  FutureOr<void> buildTypesForLibrary(
-      Library library, TypeBuilder builder) async {
+  FutureOr<void> buildTypesForVariable(VariableDeclaration variable, TypeBuilder builder) async {
+    final inheritedWidgetClassName = '${variable.identifier.name.toPascalCase()}Theme';
+    final widgetClassName = '${variable.identifier.name.toPascalCase()}Maintainer';
+    final stateClassName = '${widgetClassName}State';
+    final statefulWidget = await builder.resolveFrameworkIdentifier('StatefulWidget');
+    final state = await builder.resolveFrameworkIdentifier('State');
+    final widget = await builder.resolveFrameworkIdentifier('Widget');
+    final context = await builder.resolveFrameworkIdentifier('BuildContext');
 
-    // TODO(chooyan-eng): need to fix an runtime error below
-    // 
-    // Error: MacroImplementationExceptionImpl: Unable to find
-    // top level identifier "BuildContext" in package:flutter/widgets.dart
-    final context = await builder.identifierOfFlutter('BuildContext');
-    final widget = await builder.identifierOfFlutter('Widget');
-    final statefulWidget = await builder.identifierOfFlutter('StatefulWidget');
-    final state = await builder.identifierOfFlutter('State');
-    final stateName = '_${statefulWidgetName}State';
-
-    // TODO(chooyan-eng): how to detect `List<String> books` part in this method?
     builder.declareType(
-      statefulWidgetName,
+      widgetClassName,
       DeclarationCode.fromParts([
-        '''
-class $statefulWidgetName extends ''',
+
+        'import \'package:flutter/material.dart\';', 
+        'class $widgetClassName extends ',
         statefulWidget,
         ''' {
-  const $statefulWidgetName({super.key, required this.books});
+  const $widgetClassName({
+    super.key,
+  });
 
-  final List<String> books;
+  static ''',
+        stateClassName,
+        ' of(',
+        context,
+        ''' context) {
+    return context.findAncestorStateOfType<''',
+        stateClassName,
+        '''>()!;
+  }
 
   @override
   ''',
-        state,
-        '''<$statefulWidgetName> createState() => $stateName();
-}
-''',
-      ]),
-    );
-
-    // TODO(chooyan-eng): how to detect `BookList(books: widget.books)` part
-    // in this method?
-    builder.declareType(
-      stateName,
-      DeclarationCode.fromParts(['''
-class $stateName extends ''',
-      state,
-      '''<$statefulWidgetName> {
-  @override
-  void initState() {
-    super.initState();
-    bookList = BookList(books: widget.books);
-    bookList.setStateFn = setState;
-  }
-
-  late final BookList bookList;
-
-  @override
-  ''',
-      widget,
-      ' build(',
-      context,
-      ''' context) {
-    return bookList.build(context);
-  }
+        stateClassName,
+        ' createState() => ',
+        stateClassName,
+        '''();
 }
 '''
       ]),
     );
-  }
-}
 
-extension on TypeBuilder {
-  Future<Identifier> identifierOfFlutter(String name) async {
-    return await resolveIdentifier(
-      Uri.parse('package:flutter/widgets.dart'),
-      name,
+    final localVariableName = '_${variable.identifier.name}';
+    builder.declareType(
+      stateClassName,
+      DeclarationCode.fromParts([
+        'class $stateClassName extends ',
+        state,
+        '<',
+        widgetClassName,
+        '''> {
+  ''',
+        'String',
+        ' $localVariableName = ',
+        variable.identifier,
+        ''';
+
+  void update(String ${variable.identifier.name}) {
+    setState(() {
+      $localVariableName = ${variable.identifier.name};
+    });
+  }
+
+  @override
+  ''',
+        widget,
+        ' build(',
+        context,
+        ''' context) {
+    return ''',
+        inheritedWidgetClassName,
+        '''(
+      ${variable.identifier.name}: $localVariableName,
+      child: const ''',
+        inheritedWidgetClassName, 
+      '''(),
+    );
+  }
+}''',
+      ]),
     );
   }
 }

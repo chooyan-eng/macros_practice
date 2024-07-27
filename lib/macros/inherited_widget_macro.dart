@@ -1,102 +1,88 @@
 import 'dart:async';
-//
-// Don't import this! 
-// Unnecessarily importing a big library makes code analysis much slower
-// import 'package:flutter/material.dart';
 
 import 'package:macros/macros.dart';
+import 'package:macros_practice/util/resolve_type.dart';
 
-macro class InheritedWidgetMacro implements LibraryDefinitionMacro, LibraryTypesMacro, LibraryDeclarationsMacro, ClassTypesMacro, ClassDeclarationsMacro{
-  const InheritedWidgetMacro();
+macro class Inherited implements ClassTypesMacro {
+  const Inherited();
 
   @override
   FutureOr<void> buildTypesForClass(ClassDeclaration clazz, ClassTypeBuilder builder) async {
-    // TODO(chooyan-eng): Can't add super classes with current API.
-    // builder.appendSuperClasses([
-    //   NamedTypeAnnotationCode(
-    //     name: await builder.resolveIdentifier (Uri.parse('package:flutter/widgets.dart'), 'InheritedWidget'),
-    //   ),
-    // ]);
-  }
-  
-  @override
-  FutureOr<void> buildDeclarationsForClass(ClassDeclaration clazz, MemberDeclarationBuilder builder) async {
-      // ignore: deprecated_member_use
-      builder.declareInType(
-
+    final hogeMacro = await builder.resolveIdentifier(Uri.parse('package:macros_practice/macros/inherited_widget_macro.dart'), 'HogeMacro');
+    // final baseClassType = clazz.interfaces.first.typeArguments.first;
+    final baseClassName = clazz.identifier.name;
+    final className = '${baseClassName}Theme';
+    final inheritedWidget = await builder.resolveFrameworkIdentifier('InheritedWidget');
+    final context = await builder.resolveFrameworkIdentifier('BuildContext');
+    
+    builder.declareType(
+      className,
       DeclarationCode.fromParts([
-        '  const ${clazz.identifier.name}({',
-        await builder.resolveIdentifier (Uri.parse('package:flutter/widgets.dart'), 'Key'),
-        '? key, required ',
-        await builder.resolveIdentifier (Uri.parse('package:flutter/widgets.dart'), 'Widget'),
-        ' child}) : super(key: key, child: child);',
+        '''
+        @''',
+        hogeMacro,
+        '''()
+        class $className extends ''',
+        inheritedWidget,
+        ''' {
+  const $className({
+    super.key,
+    required this.$baseClassName,
+    required super.child,
+  });
+
+  final ''',
+        'String', // TODO(chooyan-eng): how to resolve the type of the variable?
+        ''' $baseClassName;
+        ''',
       ]),
     );
-    builder.declareInType(
+    builder.declareType(
+      '',
       DeclarationCode.fromParts([
         '''
   @override
   bool updateShouldNotify(''',
-        await builder.resolveIdentifier (Uri.parse('package:flutter/widgets.dart'), 'InheritedWidget'),
+        inheritedWidget,
         ''' oldWidget) {
-    return true;
+    return $baseClassName != (oldWidget as ''',
+        className,
+        ''').$baseClassName;
   }
-        ''',
-      ]),
-    );
 
-  }
-  
-  @override
-  FutureOr<void> buildDeclarationsForLibrary(Library library, DeclarationBuilder builder) async {    
-    // final types = await builder.typesOf(library);
-    // final type = types.firstWhere((type) => type.identifier.name == 'ClockThemeMaintainer');
-    final state = await builder.resolveIdentifier(Uri.parse('package:flutter/widgets.dart'), 'SizedBox');
-
-    builder.declareInLibrary(
-      DeclarationCode.fromParts(['final a = const ', state, '();']),
-    );
-  }
-  
-  @override
-  FutureOr<void> buildTypesForLibrary(Library library, TypeBuilder builder) async {
-    final statefulWidget = await builder.resolveIdentifier(Uri.parse('package:flutter/widgets.dart'), 'StatefulWidget');
-    builder.declareType(
-      'ClockThemeMaintainer',
-      DeclarationCode.fromParts([
-        'class ClockThemeMaintainer extends ',
-        statefulWidget,
-        ''' {
-  @override
-  ClockThemeMaintainerState createState() => ClockThemeMaintainerState();
-}''',
-      ]),
-    );
-
-    final state = await builder.resolveIdentifier(Uri.parse('package:flutter/widgets.dart'), 'State');
-    final widget = await builder.resolveIdentifier(Uri.parse('package:flutter/widgets.dart'), 'Widget');
-    final sizedBox = await builder.resolveIdentifier(Uri.parse('package:flutter/widgets.dart'), 'SizedBox');
-    final context = await builder.resolveIdentifier(Uri.parse('package:flutter/widgets.dart'), 'BuildContext');
-    builder.declareType(
-      'ClockThemeMaintainerState',
-      DeclarationCode.fromParts([
-        'class ClockThemeMaintainerState extends ',
-        state,
-        '''<ClockThemeMaintainer> {
-        ''',
-        widget, 
-        ''' build(''',
+  static ''',
+        className,
+        ' of(',
         context,
-        ''' context) => ''',
-        sizedBox,
-        '''();
+        ''' context) {
+    return context.dependOnInheritedWidgetOfExactType<''',
+        className,
+        '''>()!;
+  }
+
+  static ''',
+        className,
+        '? maybeOf(',
+        context,
+        ''' context) {
+    return context.dependOnInheritedWidgetOfExactType<''',
+        className,
+        '''>();
+  }
 }
-''',
+        ''',
       ]),
     );
   }
   
+}
+
+macro class HogeMacro implements ClassDeclarationsMacro {
+  const HogeMacro();
+
   @override
-  FutureOr<void> buildDefinitionForLibrary(Library library, LibraryDefinitionBuilder builder) {
+  FutureOr<void> buildDeclarationsForClass(ClassDeclaration clazz, MemberDeclarationBuilder builder) {
+    builder.declareInType(DeclarationCode.fromString('// HogeMacro'));
   }
+
 }

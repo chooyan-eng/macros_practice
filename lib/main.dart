@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:macros_practice/next_page.dart';
+import 'package:macros_practice/simple_stateful_widget.dart';
+import 'package:macros_practice/title_text.dart';
 
 void main() {
   runApp(
@@ -25,12 +27,15 @@ class _MainAppState extends State<MainApp> {
       appBar: AppBar(
         title: const Text('Main App'),
       ),
-      body: Center(
-        child: Text('count => $_count'),
+      body: const Center(
+        child: MyWidget(),
+        // child: SizedBox(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.of(context).push(NextPage.route());
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute<int>(builder: (context) => const NextPage()),
+          );
           setState(() {
             _count = result ?? 0;
           });

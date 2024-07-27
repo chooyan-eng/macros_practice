@@ -10,8 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   json: ^0.20.1
-  macros: ^0.1.0-main.5
+  macros: ^0.1.2-main.4 
   meta: ^1.15.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
