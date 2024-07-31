@@ -9,10 +9,6 @@ macro class Inherited implements ClassTypesMacro {
   @override
   FutureOr<void> buildTypesForClass(
       ClassDeclaration clazz, ClassTypeBuilder builder) async {
-    builder.declareType(
-      'Hoge',
-      DeclarationCode.fromString('class Hoge {}'),
-    );
     // final baseClassType = clazz.interfaces.first.typeArguments.first;
     final baseClassName = clazz.identifier.name;
     final className = '${baseClassName}Theme';
@@ -23,8 +19,7 @@ macro class Inherited implements ClassTypesMacro {
     builder.declareType(
       className,
       DeclarationCode.fromParts([
-        '''
-        class $className extends ''',
+        '''class $className extends ''',
         inheritedWidget,
         ''' {
   const $className({

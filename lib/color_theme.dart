@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:macros_practice/macros/inherited_widget_macro.dart';
-import 'package:macros_practice/macros/stateful_widget_macro.dart';
 
-@Stateful()
 const String clockColor = '#FF0000';
 
 interface class GenericInterface<T> {}

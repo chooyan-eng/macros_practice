@@ -2,15 +2,14 @@ import 'dart:async';
 
 import 'package:macros/macros.dart';
 import 'package:macros_practice/util/resolve_type.dart';
-import 'package:macros_practice/util/strings.dart';
 
-macro class Stateful implements VariableTypesMacro {
+macro class Stateful implements ClassTypesMacro{
   const Stateful();
 
   @override
-  FutureOr<void> buildTypesForVariable(VariableDeclaration variable, TypeBuilder builder) async {
-    final inheritedWidgetClassName = '${variable.identifier.name.toPascalCase()}Theme';
-    final widgetClassName = '${variable.identifier.name.toPascalCase()}Maintainer';
+  FutureOr<void> buildTypesForClass(ClassDeclaration clazz, ClassTypeBuilder builder) async {
+    final inheritedWidgetClassName = '${clazz.identifier.name}Theme';
+    final widgetClassName = '${clazz.identifier.name}Maintainer';
     final stateClassName = '${widgetClassName}State';
     final statefulWidget = await builder.resolveFrameworkIdentifier('StatefulWidget');
     final state = await builder.resolveFrameworkIdentifier('State');
@@ -21,7 +20,6 @@ macro class Stateful implements VariableTypesMacro {
       widgetClassName,
       DeclarationCode.fromParts([
 
-        'import \'package:flutter/material.dart\';', 
         'class $widgetClassName extends ',
         statefulWidget,
         ''' {
@@ -50,7 +48,7 @@ macro class Stateful implements VariableTypesMacro {
       ]),
     );
 
-    final localVariableName = '_${variable.identifier.name}';
+    final localVariableName = '_${clazz.identifier.name}';
     builder.declareType(
       stateClassName,
       DeclarationCode.fromParts([
@@ -62,12 +60,12 @@ macro class Stateful implements VariableTypesMacro {
   ''',
         'String',
         ' $localVariableName = ',
-        variable.identifier,
+        clazz.identifier,
         ''';
 
-  void update(String ${variable.identifier.name}) {
+  void update(String ${clazz.identifier.name}) {
     setState(() {
-      $localVariableName = ${variable.identifier.name};
+      $localVariableName = ${clazz.identifier.name};
     });
   }
 
@@ -80,7 +78,7 @@ macro class Stateful implements VariableTypesMacro {
     return ''',
         inheritedWidgetClassName,
         '''(
-      ${variable.identifier.name}: $localVariableName,
+      ${clazz.identifier.name}: $localVariableName,
       child: const ''',
         inheritedWidgetClassName, 
       '''(),
