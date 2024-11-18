@@ -9,10 +9,6 @@ macro class RouteMacro implements ClassDeclarationsMacro {
     MemberDeclarationBuilder builder,
   ) async {
 
-    builder.declareInLibrary(DeclarationCode.fromString(
-      "import 'package:flutter/material.dart';",
-    ));
-
     final widget = clazz.identifier;
     final typeArgument = clazz.interfaces.first.typeArguments.first;
     builder.declareInType(DeclarationCode.fromParts([

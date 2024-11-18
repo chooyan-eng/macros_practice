@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:macros_practice/macros/inherited_widget_macro.dart';
 
 const String clockColor = '#FF0000';
 
 interface class GenericInterface<T> {}
 
-@Inherited()
 class ClockColor {
   ClockColor();
   final Color baseColor = Colors.black;

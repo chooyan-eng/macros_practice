@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:macros_practice/macros/value_class_macros.dart';
 import 'package:macros_practice/next_page.dart';
-import 'package:macros_practice/simple_stateful_widget.dart';
-import 'package:macros_practice/title_text.dart';
 
 void main() {
   runApp(
@@ -10,6 +9,9 @@ void main() {
     ),
   );
 }
+
+// @ValueClassMacros()
+// int age = 0;
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -27,8 +29,8 @@ class _MainAppState extends State<MainApp> {
       appBar: AppBar(
         title: const Text('Main App'),
       ),
-      body: const Center(
-        child: MyWidget(),
+      body: Center(
+        child: Text('Value: ${1}'),
         // child: SizedBox(),
       ),
       floatingActionButton: FloatingActionButton(
