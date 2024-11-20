@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:macros_practice/macros/route_macro.dart';
 
-interface class RouteInterface<T> {}
-
-class ArticleListPage extends StatelessWidget implements RouteInterface<int> {
+@RouteMacro()
+class ArticleListPage extends StatelessWidget {
   const ArticleListPage({super.key});
 
   @override

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:macros/macros.dart';
-import 'package:macros_practice/util/resolve_type.dart';
+import 'package:macros_practice/macros/util/resolve_type.dart';
 
 macro class StatefulMacro implements ClassDeclarationsMacro {
   const StatefulMacro();

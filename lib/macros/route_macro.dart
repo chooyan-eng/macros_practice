@@ -10,21 +10,15 @@ macro class RouteMacro implements ClassDeclarationsMacro {
   ) async {
 
     final widget = clazz.identifier;
-    final typeArgument = clazz.interfaces.first.typeArguments.first;
     builder.declareInType(DeclarationCode.fromParts([
       '''
-static Route<''',
-      typeArgument.code,
-      '''> route() {
-  return MaterialPageRoute<''',
-      typeArgument.code,
-      '''>(
-    builder: (context) => const ''',
+  static Route<void> route() {
+    return MaterialPageRoute<void>(
+      builder: (context) => const ''',
       widget,
       '''(),
-  );
-}
-''',
+    );
+  }''',
       ]),
     );
   }

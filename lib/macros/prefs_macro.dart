@@ -1,13 +1,11 @@
-import 'dart:async';
-
 import 'package:macros/macros.dart';
-import 'package:macros_practice/util/strings.dart';
+import 'package:macros_practice/macros/util/strings.dart';
 
 macro class SharedPreferencesMacro implements ClassDeclarationsMacro {
   const SharedPreferencesMacro();
 
   @override
-  FutureOr<void> buildDeclarationsForClass(
+  Future<void> buildDeclarationsForClass(
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {
