@@ -20,8 +20,9 @@ $ git clone -b chore/flutter_kaigi_2024 git@github.com:chooyan-eng/macros_practi
 $ cd macros_practice
 $ flutter channel master
 $ flutter upgrade
-$ flutter pub get 
 ```
+
+また、Dart のバージョンも `3.6.0-318.0.dev` 以上にしてください。
 
 3. pub.get します
 
@@ -42,7 +43,7 @@ void sayHello() {
     }
 ```
 
-さらに、変数名 `name` を `myName` に変更すると、`sayHello()` 関数の実装が以下のように変化していることを確認してください。
+さらに、`lib/playground/hello_world.dart` ファイルに戻り、変数名 `name` を `myName` に変更してから再度 `sayHello()` 関数の実装を開くと以下のように変化していることを確認してください。
 
 ```dart
 void sayHello() {
@@ -96,6 +97,8 @@ class ArticleListPage extends StatelessWidget {
 ```
 
 `@RouteMacro()` の下に `Go to Augmentation` の文字が出てきたでしょうか。そこをタップすると、以下のようなコードが生成されているのが確認できます。
+
+※ ただし、この `Go to Augmentation` リンクは環境や状況によっては出ない場合があるようです。その場合は `ArticleListPage.route()` を適当な場所に記述して `.route()` の実装元にジャンプしてください。
 
 ```dart
 part of 'package:macros_practice/playground/article_list_page.dart';
